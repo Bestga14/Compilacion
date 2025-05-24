@@ -1,0 +1,76 @@
+@startuml DFA_Lenguaje
+skinparam state {
+  BackgroundColor #fdf6e3
+  BorderColor #657b83
+  ArrowColor #268bd2
+}
+
+[*] --> q0 : inicio
+
+state q0 {
+  [*] --> q0
+  q0 --> qH : 'h'
+  q0 --> qI : 'i'
+  q0 --> qM : 'm'
+  q0 --> qErr : otro
+  q0 --> q0 : espacio/salto
+}
+
+state "Recon. henka" as Henka {
+  qH --> qHe : 'e'
+  qHe --> qHen : 'n'
+  qHen --> qHenk : 'k'
+  qHenk --> qHenka : 'a'
+  qHenka --> q1 : espacio / fin → Token: PALABRA_CLAVE
+}
+
+state "Recon. insatsu" as Insatsu {
+  qI --> qIn : 'n'
+  qIn --> qIns : 's'
+  qIns --> qInsa : 'a'
+  qInsa --> qInsat : 't'
+  qInsat --> qInsats : 's'
+  qInsats --> qInsatsu : 'u'
+  qInsatsu --> q1 : espacio / fin → Token: PALABRA_CLAVE
+}
+
+state "Recon. moshi" as Moshi {
+  qM --> qMo : 'o'
+  qMo --> qMos : 's'
+  qMos --> qMosh : 'h'
+  qMosh --> qMoshi : 'i'
+  qMoshi --> qColon : ':' → Token: DELIMITADOR
+  qMoshi --> q1 : espacio
+}
+
+q1 --> qID : letra → inicia ID
+qID --> qID : letra/dígito
+qID --> q2 : espacio → Token: IDENTIFICADOR
+
+q2 --> qEQ : '='
+q2 --> qNE : '!'
+q2 --> qCOMP : '<' or '>'
+q2 --> qSTR : '"'
+q2 --> qNUM : dígito
+
+qEQ --> qEQEQ : '=' → Token: OP. IGUALDAD
+qEQ --> q3 : otro → Token: '='
+
+qNE --> qNEQ : '=' → Token: OP. DIFERENTE
+qNE --> qErr : otro → Error
+
+qCOMP --> q3 : otro → Token: '<' o '>'
+
+q3 --> qNUM : dígito
+qNUM --> qNUM : dígito
+qNUM --> qF : espacio → Token: NUMERO
+
+qSTR --> qSTR : cualquier excepto '"'
+qSTR --> qF : '"' → Token: CADENA
+
+qColon --> qF : fin → Token: ':'
+
+qErr --> [*] : Error léxico
+
+qF --> [*] : Fin token
+@enduml
