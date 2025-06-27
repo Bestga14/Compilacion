@@ -24,31 +24,36 @@ public class Compilador {
             return;
         }
 
-        LexerShibaInu lexer = new LexerShibaInu();
-        lexer.imprimirCodigo(codigo);
-        lexer.analizar(codigo);
+        // 1. Crear tabla de errores
+        TablaErrores tablaErrores = new TablaErrores();
 
+        // 2. Lexer
+        LexerShibaInu lexer = new LexerShibaInu(tablaErrores);
+        lexer.imprimirCodigo(codigo);
+        lexer.analizar(codigo); // Guarda errores en tablaErrores
+
+        System.out.println();
         System.out.println("------------Analizador Léxico--------------------");
         lexer.imprimirTokens();
-        lexer.imprimirErrores();
 
-        List<String> simbolos = lexer.obtenerSimbolosSimplificados();
-
+        // 3. Sintáctico
+        System.out.println();
         System.out.println("------------Analizador Sintáctico---------------");
-        TablaParser.imprimirTodo(simbolos);
-        boolean resultado = TablaParser.analizar(simbolos);
+        List<String> simbolos = lexer.obtenerSimbolosSimplificados();
+        TablaParser.analizar(simbolos, tablaErrores); // Pasar tabla de errores también
 
-        if (resultado) {
-            System.out.println("Código válido sintácticamente.");
-            System.out.println();
+        // 4. Semántico (solo si no hay errores sintácticos)
+        if (!tablaErrores.tieneErrores()) {
+            AnalizadorSemantico semantico = new AnalizadorSemantico(tablaErrores);
+            semantico.analizar(lexer.obtenerTokens()); // Guarda errores semánticos
+        }
 
-            // ANALIZADOR SEMÁNTICO
-            AnalizadorSemantico semantico = new AnalizadorSemantico();
-            List<LexerShibaInu.Token> tokens = lexer.obtenerTokens();
-            semantico.analizar(tokens);
-            semantico.mostrarErrores();
+        // 5. Mostrar errores (si hay)
+        if (tablaErrores.tieneErrores()) {
+            tablaErrores.mostrarErrores();
         } else {
-            System.out.println("Error sintáctico.");
+            System.out.println();
+            System.out.println("Compilación exitosa.");
         }
     }
 }

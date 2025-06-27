@@ -9,6 +9,12 @@ public class TablaParser {
     // Tabla del parser LL(1)
     static Map<String, Map<String, List<String>>> tabla = new HashMap<>();
 
+    private TablaErrores tablaErrores;
+
+    public TablaParser(TablaErrores tablaErrores) {
+        this.tablaErrores = tablaErrores;
+    }
+
     // Inicializar tabla LL(1)
     static {
         tabla.put("S", Map.of(
@@ -43,7 +49,7 @@ public class TablaParser {
     }
 
     // Analizador sintáctico LL(1)
-    public static boolean analizar(List<String> tokens) {
+    public static boolean analizar(List<String> tokens, TablaErrores tablaErrores) {
         Stack<String> pila = new Stack<>();
         pila.push("$");    // símbolo de fin
         pila.push("S");    // símbolo inicial
@@ -60,7 +66,9 @@ public class TablaParser {
                 if (cima.equals(actual)) {
                     i++; // avanzar en la entrada
                 } else {
-                    System.out.println("Error: Se esperaba '" + cima + "', pero se encontró '" + actual + "'");
+                    tablaErrores.add(new ErrorCompilador("E100", "Sintáctico", "TOKEN_ESPERADO"
+                            , i,1, "Se esperaba '" + cima + "', pero se encontró '" + actual + "'"
+                    ));
                     return false;
                 }
             } else {
@@ -72,6 +80,9 @@ public class TablaParser {
                     }
                 } else {
                     System.out.println("Error: No hay regla para [" + cima + ", " + actual + "]");
+                    tablaErrores.add(new ErrorCompilador("E200", "Sintáctico", "REGLA_DESCONOCIDA"
+                            , i,1, "No hay regla para [" + cima + ", " + actual + "]"
+                    ));
                     return false;
                 }
             }

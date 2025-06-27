@@ -63,7 +63,11 @@ public class LexerShibaInu {
     private static final Set<String> operadores = new HashSet<>(Arrays.asList("=", "==", "!=", "<", ">"));
 
     public static List<Token> tokens = new ArrayList<>();
-    private List<Error> errores = new ArrayList<>();
+    private TablaErrores tablaErrores;
+
+    public LexerShibaInu(TablaErrores tablaErrores) {
+        this.tablaErrores = tablaErrores;
+    }
 
     public void analizar(String[] lineas) {
         for (int ln = 0; ln < lineas.length; ln++) {
@@ -74,7 +78,8 @@ public class LexerShibaInu {
 
             int pos = 0;
             if (!keywords.contains(partes.get(0))) {
-                errores.add(new Error("E001", ErrorType.NO_PALABRA_CLAVE, 0, ln + 1,
+                tablaErrores.add(new ErrorCompilador("E001", "Lexico",
+                        ErrorType.NO_PALABRA_CLAVE.toString(), 0, ln + 1,
                         "La palabra no es palabra clave: " + partes.get(0)));
                 continue;
             }
@@ -98,10 +103,12 @@ public class LexerShibaInu {
                 } else if (p.equals(":") && partes.get(0).equals("moshi")) {
                     tokens.add(new Token(TokenType.DELIMITADOR, ":", pos));
                 } else if (p.startsWith("\"") && !p.endsWith("\"")) {
-                    errores.add(new Error("E003", ErrorType.CADENA_NO_TERMINADA, pos, ln + 1,
+                    tablaErrores.add(new ErrorCompilador("E003", "Lexico",
+                            ErrorType.CADENA_NO_TERMINADA.toString(), pos, ln + 1,
                             "Cadena no terminada: " + p));
                 } else {
-                    errores.add(new Error("E999", ErrorType.IDENTIFICADOR_INVALIDO, pos, ln + 1,
+                    tablaErrores.add(new ErrorCompilador("E999", "Lexico",
+                            ErrorType.IDENTIFICADOR_INVALIDO.toString(), pos, ln + 1,
                             "Token no reconocido: " + p));
                 }
                 pos += p.length();
@@ -202,18 +209,18 @@ public class LexerShibaInu {
             System.out.println(t);
         }
     }
-
-    public void imprimirErrores() {
-        if (errores.isEmpty()) {
-            System.out.println();
-        } else {
-            System.out.println();
-            System.out.println("------------Tabla de Errores-------------------");
-            for (Error e : errores) {
-                System.out.println(e);
-            }
-        }
-    }
+// Metodo para observar errores de manera local
+//    public void imprimirErrores() {
+//        if (errores.isEmpty()) {
+//            System.out.println();
+//        } else {
+//            System.out.println();
+//            System.out.println("------------Tabla de Errores-------------------");
+//            for (Error e : errores) {
+//                System.out.println(e);
+//            }
+//        }
+//    }
 
     public void imprimirCodigo(String[] codigo) {
         System.out.println("------------Código Fuente----------------------");
