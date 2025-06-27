@@ -79,7 +79,6 @@ public class TablaParser {
                         pila.push(produccion.get(j));
                     }
                 } else {
-                    System.out.println("Error: No hay regla para [" + cima + ", " + actual + "]");
                     tablaErrores.add(new ErrorCompilador("E200", "Sintáctico", "REGLA_DESCONOCIDA"
                             , i,1, "No hay regla para [" + cima + ", " + actual + "]"
                     ));
