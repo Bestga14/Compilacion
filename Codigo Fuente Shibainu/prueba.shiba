@@ -1,0 +1,4 @@
+henka x  = 12
+insatsu "Hola como estas"
+moshi x != 2 : insatsu "Esto se ejecuto"
+moshi x != 12 : insatsu "Esto no se imprime"

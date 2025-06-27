@@ -1,3 +1,5 @@
+package LenguajeShibaInu;
+
 import java.util.*;
 
 public class LexerShibaInu {
@@ -19,6 +21,16 @@ public class LexerShibaInu {
             this.value = value;
             this.position = position;
         }
+
+        public TokenType getType() {
+            return type;
+        }
+
+        public String getValue() {
+            return value;
+        }
+
+
 
         public String toString() {
             return String.format("Token(type=%s, value=%s, position=%d)", type, value, position);
@@ -50,7 +62,7 @@ public class LexerShibaInu {
     // Operadores válidos
     private static final Set<String> operadores = new HashSet<>(Arrays.asList("=", "==", "!=", "<", ">"));
 
-    private List<Token> tokens = new ArrayList<>();
+    public static List<Token> tokens = new ArrayList<>();
     private List<Error> errores = new ArrayList<>();
 
     public void analizar(String[] lineas) {
@@ -73,7 +85,9 @@ public class LexerShibaInu {
                 String p = partes.get(i);
                 pos = linea.indexOf(p, pos);
 
-                if (p.matches("[a-zA-Z][a-zA-Z0-9]*")) {
+                if (keywords.contains(p)) {
+                    tokens.add(new Token(TokenType.PALABRA_CLAVE, p, pos));
+                } else if (p.matches("[a-zA-Z][a-zA-Z0-9]*")) {
                     tokens.add(new Token(TokenType.IDENTIFICADOR, p, pos));
                 } else if (p.matches("==|!=|=|<|>")) {
                     tokens.add(new Token(TokenType.OPERADOR, p, pos));
@@ -150,9 +164,40 @@ public class LexerShibaInu {
         return tokens;
     }
 
+    public List<String> obtenerSimbolosSimplificados() {
+        List<String> tipos = new ArrayList<>();
+        for (Token token : tokens) {
+            switch (token.getType()) {
+                case PALABRA_CLAVE:
+                    tipos.add(token.getValue()); // Ej: henka, moshi, insatsu
+                    break;
+                case IDENTIFICADOR:
+                    tipos.add("ID");
+                    break;
+                case NUMERO:
+                    tipos.add("NUM");
+                    break;
+                case CADENA:
+                    tipos.add("CADENA");
+                    break;
+                case OPERADOR:
+                    tipos.add(token.getValue()); // Ej: ==, !=, <, >
+                    break;
+                case DELIMITADOR:
+                    tipos.add(":"); // importante
+                    break;
+                default:
+                    tipos.add(token.getType().name());
+            }
+        }
+        tipos.add("$"); // Fin de cadena
+        return tipos;
+    }
+
+
     public void imprimirTokens() {
-        System.out.println();
-        System.out.println("------------Tabla de simbolos------------------");
+        //System.out.println();
+        System.out.println("------------Tabla de Simbolos--------------------");
         for (Token t : tokens) {
             System.out.println(t);
         }
@@ -175,23 +220,28 @@ public class LexerShibaInu {
         for (int i = 0; i < codigo.length; i++) {
             System.out.printf("Línea %d: %s\n", i + 1, codigo[i]);
         }
+        System.out.println();
+    }
+
+    public List<Token> obtenerTokens() {
+        return this.tokens; // suponiendo que tokens es una lista que guardas internamente
     }
 
 
-    public static void main(String[] args) {
-        Lexer lexer = new Lexer();
-        String[] codigo = {
-                "henka x = 12",
-                "insatsu \"Hola mundo\"",
-                "moshi x == 5 : insatsu \"ok\"",
-                //"print x", // error: no es palabra clave
-                //"henka 1x = 2", // error: identificador inválido
-                //"insatsu \"sin fin" // error: cadena no cerrada
-        };
-
-        lexer.imprimirCodigo(codigo);
-        lexer.analizar(codigo);
-        lexer.imprimirTokens();
-        lexer.imprimirErrores();
-    }
+    //public static void main(String[] args) {
+    //    LexerShibaInu lexer = new LexerShibaInu();
+    //    String[] codigo = {
+    //            "henka x = 12",
+    //            //"insatsu \"Hola mundo\"",
+    //            //"moshi x == 5 : insatsu \"ok\"",
+    //            //"print x", // error: no es palabra clave
+    //            //"henka 1x = 2", // error: identificador inválido
+    //            //"insatsu \"sin fin" // error: cadena no cerrada
+    //    };
+//
+    //    lexer.imprimirCodigo(codigo);
+    //    lexer.analizar(codigo);
+    //    lexer.imprimirTokens();
+    //    lexer.imprimirErrores();
+    //}
 }
