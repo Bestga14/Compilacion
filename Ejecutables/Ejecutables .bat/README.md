@@ -25,7 +25,7 @@ Este comando realiza los siguientes procesos:
 2. Navegar a la ubicación exacta del archivo fuente.
 3. Ejecutar el siguiente comando en bash:
 
-shibainu nombre_de_archivo.shiba
+`shibainu nombre_de_archivo.shiba`
 
 Esto mostrará en consola los resultados de los análisis respectivos.
 
@@ -42,7 +42,7 @@ Este comando se encarga de:
 
 Una vez ejecutado shibainu, usar en bash:
 
-hoeru nombre_de_archivo.shiba
+`hoeru nombre_de_archivo.shiba`
 
 Esto ejecutará el código y mostrará su salida en la consola.
 
