@@ -41,6 +41,7 @@ public class Compilador {
         System.out.println("------------Analizador Sintáctico---------------");
         List<String> simbolos = lexer.obtenerSimbolosSimplificados();
         TablaParser.analizar(simbolos, tablaErrores); // Pasar tabla de errores también
+        TablaParser.imprimirTodo(simbolos);
 
         // 4. Semántico (solo si no hay errores sintácticos)
         if (!tablaErrores.tieneErrores()) {
